@@ -11,7 +11,6 @@ function Tabsidebar(props) {
                 ตัวอย่าง
             </div>
             <Menu>
-                {/* {props.collapse && !showMenu && */}
                 {!props.mode &&
                     <MenuItem onClick={() => setShowMenu(!showMenu)}>
                         Menu
@@ -44,14 +43,11 @@ function Tabsidebar(props) {
         </>
     )
 
-    // const { toggleSidebar } = useProSidebar();
-
     return (
         <div className={props.collapse && !showMenu && 'sidebar mobile'}>
             <ProSidebarProvider>
                 <Sidebar
                     customBreakPoint="767px"
-                    // hidden={props.mode == "collapse"}
                     defaultCollapsed={showMenu || false}
                     collapsedWidth="5.5rem"
                 >
@@ -65,6 +61,7 @@ function Tabsidebar(props) {
                     }
                 </Sidebar>
             </ProSidebarProvider>
+            
             {props.mode === "mobile" &&
                 <ProSidebarProvider>
                     <Sidebar>

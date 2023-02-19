@@ -10,18 +10,12 @@ import 'moment/locale/th';
 function ConfirmPage() {
     const tableHead = ['ลำดับ', 'เลขครุภัณฑ์', 'ชื่อครุภัณฑ์', 'ยี่ห้อ/รุ่น/ขนาด', 'Serial No.', 'ผู้ผลิต', 'ผู้จำหน่าย', 'จำนวนเงิน', '']
     const defaultDepartment = (
-        // <>
-        //     <option value="หน่วยงาน 1">หน่วยงาน 1</option>
-        //     <option value="หน่วยงาน 2">หน่วยงาน 2</option>
-        //     <option value="หน่วยงาน 3">หน่วยงาน 3</option>
-        // </>
         ["หน่วยงาน 1", "หน่วยงาน 2", "หน่วยงาน 3"]
     )
     const nameSet = [{
         field: "ผู้บันทึก",
         name: "ชื่อ นามสกุล",
         date: new Date().toISOString(),
-        // date: "2023-05-18T17:45:25.999Z",
     }]
     const [listAll, setListAll] = useState(
         [{
@@ -46,7 +40,6 @@ function ConfirmPage() {
             itemId: genId()
         }]
     )
-    // const [item, setItem] = useState([])
     const [filter, setFilter] = useState("")
     const [optionDepartment, setOptionDepartment] = useState(defaultDepartment)
     const [pickDateTime, setPickDateTime] = useState()
@@ -67,11 +60,6 @@ function ConfirmPage() {
         listAll[ind].status = "Reject"
     }
 
-    const saveToList = () => {
-        // setListAll(...listAll, {})
-        console.log(selectItem)
-    }
-
     function renderMonth(props, month, year, selectedDate) {
         const date = new Date();
         date.setMonth(month);
@@ -80,7 +68,6 @@ function ConfirmPage() {
 
     function renderYear(props, year, selectedDate) {
         return <td {...props}>{year + 543}</td>;
-        // return <td {...props}>{year % 100}</td>;
     }
 
     useEffect(() => {
@@ -101,7 +88,6 @@ function ConfirmPage() {
         const formDataObj = Object.fromEntries(formData.entries())
         console.log(formDataObj, pickDateTime)
 
-        // const index = listAll.findIndex(list => list.itemId == selectItem[0].itemId)
         const newList = listAll.map(function (list) {
             return list.itemId == selectItem[0].itemId ? { ...list, ...formDataObj, date: pickDateTime || selectItem[0].date } : list;
         })
@@ -112,13 +98,13 @@ function ConfirmPage() {
     // อัพเดทหน่วยงานเพิ่ม ตอนบันทึก List
     const [listDepartment, setListDepartment] = useState()
     useEffect(() => {
-        const arr = []
+        const arr = defaultDepartment
         listAll.forEach(ele => {
             if (!arr.includes(ele.department)) {
                 arr.push(ele.department);
             }
         })
-        setListDepartment(arr)
+        setOptionDepartment(arr)
     }, [listAll])
 
     return (
@@ -131,27 +117,6 @@ function ConfirmPage() {
                 <Row className='text-head m-0'>
                     รายการเสนออนุมัติประจำวัน
                     <Col md="3">
-                        {/* <div class="input-group">
-                            <Datetime className='input-group calendar form-control p-0'
-                                // initialValue='dd/mm/yyyy'
-                                onChange={(event) => {
-                                    console.log(event)
-                                    const date = (new Date(event))
-                                    const result = date.toLocaleDateString('th-TH', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })
-                                    setFilter({ ...filter, date: event })
-                                }}
-                                timeFormat={false}
-                                renderYear={renderYear}
-                                renderMonth={renderMonth}
-                            />
-                            <span class="input-group-text bg-white">
-                                <i className="pi pi-calendar" />
-                            </span>
-                        </div> */}
                         <Datetime
                             className={`${filter.date && "btn-active"} headPickDateTime`}
                             initialValue='dd/mm/yyyy'
@@ -176,7 +141,6 @@ function ConfirmPage() {
                             timeFormat={false}
                             renderYear={renderYear}
                             renderMonth={renderMonth}
-                        // renderDay={(props,year) => console.log(props,year)}
                         />
 
                         <i className="pi pi-calendar btn-calendar" />
@@ -189,7 +153,6 @@ function ConfirmPage() {
                             onChange={e => setFilter({ ...filter, department: e.target.value })}
                         >
                             <option>หน่วยงานที่เสนอ / รหัส P4P</option>
-                            {/* {optionDepartment} */}
                             {optionDepartment.map(val => {
                                 return <option value={val}>{val}</option>
                             })}
@@ -202,26 +165,21 @@ function ConfirmPage() {
                             style={{ cursor: "pointer" }}
                             onClick={() => {
                                 setFilter({ status: "All", date: "", department: "" })
+                                // not updated to thai format date
                                 const el = document.getElementsByClassName("headPickDateTime")
                                 console.log(el[0].childNodes)
-                                el[0].childNodes[0].defaultValue = null
-                                el[0].childNodes[0].value = null
-                                console.log(el[0].childNodes[0])
+                                // el[0].childNodes[0].defaultValue = null
+                                // el[0].childNodes[0].value = null
+                                // console.log(el[0].childNodes[0])
                             }}
                         />
                     </Col>
                 </Row>
             </div>
 
-            {/* <div class="rounded-bottom bg-white pb-2 m-3"> */}
             <div className="content p-2 mt-0">
                 <Row>
                     <Col md="auto" sm="6" xs="12">
-                        {/* <Button className={filter.status == "All" ? "btn-active" : 'btn-status'} variant='light'
-                            onClick={() => setFilter({ ...filter, status: "All" })}
-                        >
-                            {listAll.length}
-                        </Button> */}
                         <div
                             class={`btn-group btn-status ${filter.status == "All" && "btn-active"}`}
                             role="group"
@@ -284,7 +242,7 @@ function ConfirmPage() {
                                 Reject
                             </button>
                             <button class="btn">
-                                <b> {listAll.filter(ele => ele.status == "Reject").length}</b>
+                                <b>{listAll.filter(ele => ele.status == "Reject").length}</b>
                             </button>
                         </div>
                     </Col>
@@ -294,22 +252,17 @@ function ConfirmPage() {
             <Row>
                 <Collapse in={showList} dimension="height">
                     <Col md="4">
-                        <div className='content' style={{width: "100%"}}>
+                        <div className='content' style={{ width: "100%" }}>
                             <div className='text-head'>
                                 <Stack direction="horizontal" gap={2}>
                                     รายการเสนออนุมัติ
+
                                     <Button
                                         // variant='light'
-                                        // className='ms-auto'
                                         className='btn-collapse ms-auto d-lg-block d-md-block d-none'
                                         onClick={() => setShowList(!showList)}>
                                         <i className="pi  pi-angle-left" />
                                     </Button>
-                                    {/* <Button
-                                        onClick={() => setFilter("Reject")}>
-                                        x
-                                        <i className="pi  pi-angle-left" />
-                                    </Button> */}
                                 </Stack>
                             </div>
 
@@ -374,11 +327,11 @@ function ConfirmPage() {
                                 <vr hidden={showList} />
                                 รายการรอขออนุมัติเบิกจ่ายครุภัณฑ์
                                 <Button variant="outline-success" className='ms-auto'
-                                onClick={() => setShowList(false)}>ดูรายละเอียด</Button>
+                                    onClick={() => setShowList(false)}>ดูรายละเอียด</Button>
                                 <Button variant="outline-success"
                                     onClick={() => {
                                         // window.print()
-                                        document.getElementById("forms").disabled = true
+
                                         // var printwin = window.open("");
                                         // printwin.document.write(document.getElementById("forms").innerHTML);
                                         // printwin.print();
@@ -388,15 +341,14 @@ function ConfirmPage() {
                         <div className='text-head mb-3'>
                             <Stack direction="horizontal">
                                 บันทึกใบเบิกครุภัณฑ์
-                                <Button variant="success" className='ms-auto' onClick={saveToList}
+                                <Button variant="success" className='ms-auto'
                                     type="submit" form="forms">
                                     บันทึก
                                 </Button>
                             </Stack>
                         </div>
-                        {/* <div id="forms"> */}
+
                         <Form id="forms" onSubmit={submit}  >
-                            {/* <fieldset disabled> */}
                             <ListBox
                                 selectItem={selectItem}
                                 renderMonth={renderMonth}
@@ -404,14 +356,13 @@ function ConfirmPage() {
                                 optionDepartment={optionDepartment}
                                 callbackDateTime={value => setPickDateTime(value)}
                             />
-                            {/* </fieldset> */}
                         </Form>
                         <TableForm
                             err={err}
                             tableHead={tableHead}
                             callbackErr={val => setErr(val)}
                         />
-                        {/* </div> */}
+
                     </div>
                 </Col>
             </Row>
@@ -461,15 +412,17 @@ function ListBox(props) {
     }
 
     const [pickDateTime, setPickDateTime] = useState()
+    const item = props.selectItem[0]
+    const [optionVal,setOptionVal] = useState()
+
     useEffect(() => {
         setPickDateTime(props.selectItem[0].date)
         console.log(props.selectItem[0])
+        setOptionVal(item.department)
     }, [props.selectItem])
-    const item = props.selectItem[0]
+
     return (
         <>
-            {/* <Form id="test" onSubmit={submit}> */}
-            {/* {props.selectItem.map(item => ( */}
             <Table>
                 <tr>
                     <td>
@@ -521,25 +474,21 @@ function ListBox(props) {
                 </tr>
                 <tr>
                     <td>
-                        {item.department}
                         <Form.Group as={Row}>
                             <Form.Label column>
                                 หน่วยงาน
                             </Form.Label>
                             <Col sm="12" lg="8">
                                 <Form.Select size='sm'
-                                    defaultValue={item.department}
+                                    // defaultValue={item.department}
+                                    value={optionVal}
                                     name="department"
+                                    onChange={(e) => setOptionVal(e.target.value)}
                                 >
-                                    {/* <option defaultValue={"x"}>x</option> */}
-                                    {/* <option defaultValue={item.department || ""}>{item.department}</option> */}
+                                    {!item.department && <option defaultValue></option>}
                                     {props.optionDepartment.map(val => {
                                         return <option value={val}>{val}</option>
                                     })}
-                                    {item.department
-                                        ? <option defaultValue={item.department}>{item.department}</option>
-                                        : <option></option>
-                                    }
                                 </Form.Select>
                             </Col>
                         </Form.Group>
@@ -594,7 +543,7 @@ function ListBox(props) {
                                 <Form.Control
                                     as="textarea"
                                     name="remark"
-                                    defaultValue={item.remark || 'x'}
+                                    defaultValue={item.remark}
                                 />
                             </Col>
                         </Form.Group>
@@ -611,7 +560,6 @@ function ListBox(props) {
                                         name="price"
                                         type='number'
                                         className='rounded-end'
-                                    // value={item.price || [...(item.itemNo)].reverse().join('')}
                                     />
                                     <span className='input-group-text text-smaller bg-transparent border-0'>
                                         <small>
@@ -623,7 +571,6 @@ function ListBox(props) {
                         </Form.Group>
                     </td>
                     <td>
-                        {/* <button type="submit"> test </button> */}
                         <Form.Group as={Row} hidden={!pickDateTime}>
                             <Form.Label column>
                                 ปีงบประมาณ
@@ -644,8 +591,6 @@ function ListBox(props) {
                     </td>
                 </tr>
             </Table>
-            {/* ))} */}
-            {/* </Form> */}
         </>
     )
 }
@@ -653,6 +598,7 @@ function ListBox(props) {
 function TableForm(props) {
     const [item, setItem] = useState([])
     const { tableHead } = props
+
     const addItem = () => {
         const items = item.push([]);
         console.log(item)
@@ -664,9 +610,8 @@ function TableForm(props) {
         const newList = item.filter((item, ind) => (ind != index))
         console.log(index, newList)
         setItem(newList)
-        // if (!newList.length) callbackErr(true)
     }
-    console.log(props.err)
+
     return (
         <Form id="tableItems" >
             <div className='text-head'>
@@ -688,7 +633,7 @@ function TableForm(props) {
                         {head}
                     </th>
                 ))}
-                {/* {item.length > 0 && */}
+
                 {item.map((ele, ind) => (
                     <tr>
                         <td align='center'>{ind + 1}</td>
@@ -742,11 +687,8 @@ function TableForm(props) {
                         </td>
                     </tr>
                 ))}
-                {/*  } */}
             </Table>
-            {/* </Col>
-                </Row >
-            </div> */}
+
         </Form >
     )
 }

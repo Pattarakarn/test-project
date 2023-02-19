@@ -6,12 +6,10 @@
   background: #eee;
   color: #6c757d;
   font-size: small;
-  /* min-height: 100vh; */
 }
 
 .text-head {
   color: var(--green);
-  /* #489404 !important */
   border-bottom: 1px solid gray;
   padding: .75em;
   cursor: default;
@@ -41,10 +39,6 @@ small {
   padding: .5em;
   margin: .75em;
 }
-
-/* .box-item>small {
-  color: #489404 !important;
-} */
 
 .box-item:hover,
 .box-item:active {
@@ -85,9 +79,6 @@ small {
 
 .btn-collapse,
 .expand {
-  /* border-radius: 50% !important; */
-  /* position: relative; */
-  /* right: -20px; */
   background: none !important;
   cursor: pointer;
   border: none !important;
@@ -102,7 +93,7 @@ small {
 .expand {
   position: absolute;
   margin-top: 1.5em;
-  left: .4em;
+  margin-left: -0.5em;
 }
 
 @media (max-width: 768px) {
@@ -149,7 +140,6 @@ small {
 .rdtPicker td.rdtToday {
   font-weight: bold;
   color: #387c04;
-  /* background: #e8ecfc; */
 }
 
 .rdtPicker thead tr:first-of-type th {
@@ -199,7 +189,6 @@ td.rdtSwitch {
   float: right;
   margin-right: 10px;
   margin-top: -1.7em;
-  /* margin-top: -2.3em; */
   z-index: 2;
   color: initial;
   font-size: small !important;
@@ -212,12 +201,9 @@ td.rdtSwitch {
 
 /* change default color green from #489404 & #146c43 */
 
-
-/* .ps-sidebar-container { */
 .sidebar {
-  /* position: absolute; */
   display: flex;
-  height: 100vh;
+  height: 100%;
   background: var(--green);
   z-index: 2;
 }
@@ -245,13 +231,9 @@ td.rdtSwitch {
   --bs-btn-bg: #489404 !important;
   --bs-btn-border-color: #489404 !important;
   --bs-btn-hover-bg: #3a7603 !important;
-  /* --bs-btn-hover-bg: #157347; */
   --bs-btn-hover-border-color: #3a7603 !important;
-  /* --bs-btn-hover-border-color: #146c43; */
   --bs-btn-focus-shadow-rgb: 60, 153, 110;
   --bs-btn-active-bg: #3a7603 !important;
-  /* --bs-btn-active-bg: #146c43; */
-  /* --bs-btn-active-border-color: #13653f; */
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-bg: #489404 !important;
   --bs-btn-disabled-border-color: #489404 !important;
