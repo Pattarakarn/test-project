@@ -1,38 +1,298 @@
+:root {
+  --green: #489404;
+}
+
 .App {
-  text-align: center;
+  background: #eee;
+  color: #6c757d;
+  font-size: small;
+  /* min-height: 100vh; */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.text-head {
+  color: var(--green);
+  /* #489404 !important */
+  border-bottom: 1px solid gray;
+  padding: .75em;
+  cursor: default;
+  font-size: medium;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.rdtPicker {
+  font-size: small !important;
+}
+
+span,
+label,
+small {
+  color: #489404;
+  /* white-space: nowrap; */
+}
+
+.content {
+  background: white;
+  border-radius: 5px;
+  margin: 1em;
+  /* padding-bottom: 1em; */
+}
+
+.box-item {
+  background: #FAFAFA !important;
+  padding: .5em;
+  margin: .75em;
+}
+
+/* .box-item>small {
+  color: #489404 !important;
+} */
+
+.box-item:hover,
+.box-item:active {
+  background: #e8ecfc !important;
+  cursor: pointer;
+}
+
+.btn {
+  font-size: small !important;
+}
+
+.btn-status {
+  background: #FAFAFA !important;
+  color: #6c757d !important;
+  width: 100%;
+  border: 1px solid lightgray;
+  margin-bottom: .5em;
+}
+
+.btn-status:hover {
+  color: initial !important;
+  background: #e8ecfc !important;
+}
+
+.btn-status:active>button,
+.btn-status:hover>button,
+.btn-status:focus>button,
+.btn-status>button {
+  border-color: transparent !important;
+  color: inherit;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #489404 !important;
+  box-shadow: none !important;
+}
+
+.btn-collapse,
+.expand {
+  /* border-radius: 50% !important; */
+  /* position: relative; */
+  /* right: -20px; */
+  background: none !important;
+  cursor: pointer;
+  border: none !important;
+  color: var(--green) !important;
+}
+
+.btn-collapse:hover>.pi-angle-left:before,
+.expand:hover>.pi-angle-right:before {
+  background: white !important;
+}
+
+.expand {
+  position: absolute;
+  margin-top: 1.5em;
+  left: .4em;
+}
+
+@media (max-width: 768px) {
+  .expand {
+    display: none;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.pi-angle-left:before,
+.pi-angle-right:before {
+  background: #e8ecfc;
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid;
+}
+
+.btn-active,
+.btn-active:hover,
+.btn-active>input {
+  outline: 1px solid var(--green) !important;
+  color: initial !important;
+  border-radius: 0.25rem;
+  border: none !important;
+}
+
+.col-form-label {
+  padding-right: 0 !important;
+}
+
+/* react-datetime */
+.rdt.inForm>.rdtPicker {
+  right: 0;
+}
+
+.rdtTimeToggle {
+  border-top: 1px solid #489404 !important;
+  border-radius: 5px;
+}
+
+.rdtTimeToggle:hover {
+  color: #489404;
+}
+
+.rdtPicker td.rdtToday {
+  font-weight: bold;
+  color: #387c04;
+  /* background: #e8ecfc; */
+}
+
+.rdtPicker thead tr:first-of-type th {
+  color: #489404;
+}
+
+.rdtPicker td.rdtToday:before {
+  content: none !important;
+}
+
+td.rdtSwitch {
+  border-bottom: 1px solid #489404 !important;
+}
+
+.rdtBtn {
+  color: #6c757d;
+}
+
+.rdtCount {
+  height: 30% !important;
+}
+
+.rdtCounter .rdtBtn:hover {
+  background: #e8ecfc !important;
+}
+
+.calendar {
+  min-width: fit-content;
+  border-color: transparent !important;
+}
+
+.calendar>.rdtPicker {
+  top: 2.25em;
+}
+
+.rdtPicker td.rdtActive {
+  outline: 2px solid #e8ecfc !important;
+  border-radius: 3px !important;
+}
+
+.headPickDateTime {
+  color: initial;
+}
+
+.btn-calendar {
+  position: relative;
+  float: right;
+  margin-right: 10px;
+  margin-top: -1.7em;
+  /* margin-top: -2.3em; */
+  z-index: 2;
+  color: initial;
+  font-size: small !important;
+}
+
+.form-control {
+  font-size: .875rem !important;
+  padding: 4px 8px !important;
+}
+
+/* change default color green from #489404 & #146c43 */
+
+
+/* .ps-sidebar-container { */
+.sidebar {
+  /* position: absolute; */
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  height: 100vh;
+  background: var(--green);
+  z-index: 2;
+}
+
+.ps-menu-button,
+.ps-menu-label,
+.ps-menu-button span {
+  background: var(--green) !important;
+  color: white !important;
+}
+
+.ps-menu-button:hover,
+.ps-menu-button:hover .ps-menu-label,
+.ps-menu-button:hover span {
+  background: #387c04 !important;
+}
+
+.ps-menu-button-head {
+  padding: 1.5em;
+  background: var(--green);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.btn-success {
+  --bs-btn-bg: #489404 !important;
+  --bs-btn-border-color: #489404 !important;
+  --bs-btn-hover-bg: #3a7603 !important;
+  /* --bs-btn-hover-bg: #157347; */
+  --bs-btn-hover-border-color: #3a7603 !important;
+  /* --bs-btn-hover-border-color: #146c43; */
+  --bs-btn-focus-shadow-rgb: 60, 153, 110;
+  --bs-btn-active-bg: #3a7603 !important;
+  /* --bs-btn-active-bg: #146c43; */
+  /* --bs-btn-active-border-color: #13653f; */
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-bg: #489404 !important;
+  --bs-btn-disabled-border-color: #489404 !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-outline-success {
+  --bs-btn-color: #489404 !important;
+  --bs-btn-border-color: #489404 !important;
+  --bs-btn-hover-bg: #489404 !important;
+  --bs-btn-hover-border-color: #489404 !important;
+  --bs-btn-focus-shadow-rgb: 25, 135, 84;
+  --bs-btn-active-bg: #489404 !important;
+  --bs-btn-active-border-color: #489404 !important;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #489404 !important;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #489404 !important;
+  --bs-gradient: none;
+}
+
+/* .btn-primary.outline:hover, .btn-primary.outline:focus, .btn-primary.outline:active, .btn-primary.outline.active, .open > .dropdown-toggle.btn-primary {
+	color: #33a6cc;
+	border-color: #33a6cc;
+}
+.btn-primary.outline:active, .btn-primary.outline.active {
+	border-color: #007299;
+	color: #007299;
+	box-shadow: none;
+} */
+
+.header {
+  border-bottom: 1px solid gray;
+  padding: .75em;
+  cursor: default;
+  font-size: medium;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.sidebar.mobile {
+  background-color: var(--green) !important;
+  position: fixed;
 }

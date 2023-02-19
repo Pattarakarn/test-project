@@ -1,25 +1,56 @@
 import logo from './logo.svg';
 import './App.css';
+import Tabsidebar from './component/sidebar';
+import ConfirmPage from './pages/confirmItem';
+import Test from './pages/test';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
 
 function App() {
+  const [mobileMode, setMobileMode] = useState()
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div className="sidebar">
+      <div className='d-lg-none'>
+        <Tabsidebar collapse={true} />
+      </div>
+      <div className='d-lg-block d-none'>
+        <Tabsidebar />
+      </div>
+
+
+      <div className='App'>
+        <Header />
+
+        <ConfirmPage />
+      </div>
+      {/* <Test /> */}
+    </div >
   );
+}
+
+function Header() {
+  const [showMenu, setShowMenu] = useState(false)
+
+  return (
+    <>
+      <div className='hstack header bg-light '>
+        {/* <div style={{ display: "flex" }}> */}
+        <div className='btn-outline-success btn ms-0 d-md-none'
+          onClick={() => setShowMenu(!showMenu)}>
+          Menu
+        </div>
+        <div className='col' align="right">
+          Username
+        </div>
+      </div>
+      <div className="sidebar d-md-none mobile"
+        hidden={!showMenu}
+      >
+        <Tabsidebar mode="mobile" />
+      </div>
+    </>
+  )
 }
 
 export default App;
