@@ -2,13 +2,10 @@ import logo from './logo.svg';
 import './App.css';
 import Tabsidebar from './component/sidebar';
 import ConfirmPage from './pages/confirmItem';
-import Test from './pages/test';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 
 function App() {
-  const [mobileMode, setMobileMode] = useState()
-
   return (
     <div className="sidebar">
       <div className='d-lg-none'>
@@ -24,7 +21,6 @@ function App() {
 
         <ConfirmPage />
       </div>
-      {/* <Test /> */}
     </div >
   );
 }
@@ -35,7 +31,6 @@ function Header() {
   return (
     <>
       <div className='hstack header bg-light '>
-        {/* <div style={{ display: "flex" }}> */}
         <div className='btn-outline-success btn ms-0 d-md-none'
           onClick={() => setShowMenu(!showMenu)}>
           Menu

@@ -6,6 +6,7 @@
   background: #eee;
   color: #6c757d;
   font-size: small;
+  width: 100%;
 }
 
 .text-head {
@@ -278,3 +279,24 @@ td.rdtSwitch {
   background-color: var(--green) !important;
   position: fixed;
 }
+
+@media print {
+
+  .btn,
+  .header,
+  aside,
+  #title,
+  .content> :not(.printform) {
+    display: none !important;
+  }
+}
+
+/* div > :not(:not(#printform)) {
+  background-color: pink !important;
+} */
+
+/* button,
+.header,
+.content> :not(.printform) {
+  background-color: pink !important;
+} */

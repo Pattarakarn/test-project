@@ -4,11 +4,8 @@ import moment from 'moment';
 import Datetime from 'react-datetime';
 import "react-datetime/css/react-datetime.css";
 import 'primeicons/primeicons.css';
-import 'moment/locale/th';
-// import th from 'date-fns/locale/th';
 
 function ConfirmPage() {
-    const tableHead = ['ลำดับ', 'เลขครุภัณฑ์', 'ชื่อครุภัณฑ์', 'ยี่ห้อ/รุ่น/ขนาด', 'Serial No.', 'ผู้ผลิต', 'ผู้จำหน่าย', 'จำนวนเงิน', '']
     const defaultDepartment = (
         ["หน่วยงาน 1", "หน่วยงาน 2", "หน่วยงาน 3"]
     )
@@ -45,18 +42,19 @@ function ConfirmPage() {
     const [pickDateTime, setPickDateTime] = useState()
     const [selectItem, setSelectItem] = useState([{}])
     const [showList, setShowList] = useState(false)
+    const [items, setItems] = useState([])
 
     function genId() {
         return Math.floor(10e5 + Math.random() * 10e5)
     }
 
     const approveItem = (val) => {
-        const ind = listAll.findIndex(list => (list.itemNo == val))
+        const ind = listAll.findIndex(list => (list.itemNo === val))
         listAll[ind].status = "Approve"
         console.log(listAll)
     }
     const rejectItem = (val) => {
-        const ind = listAll.findIndex(list => (list.itemNo == val))
+        const ind = listAll.findIndex(list => (list.itemNo === val))
         listAll[ind].status = "Reject"
     }
 
@@ -71,32 +69,37 @@ function ConfirmPage() {
     }
 
     useEffect(() => {
-        console.log(filter)
         setShowList(true)
-    }, [filter != ""])
+    }, [filter !== ""])
 
     const [err, setErr] = useState(false)
     const submit = (e) => {
-        setErr(true)
-        console.log(err, 'ERR')
         e.preventDefault()
-
-        const x = document.getElementById("tableItems")
-        console.log(x)
+        if (!items.length) {
+            setErr(true)
+            return
+        }
 
         const formData = new FormData(e.target)
         const formDataObj = Object.fromEntries(formData.entries())
-        console.log(formDataObj, pickDateTime)
+        const allData = { ...formDataObj, date: pickDateTime || selectItem[0].date, inventory: items }
+        let itemNo
+        const newList = listAll.sort((a, b) => a.itemNo - b.itemNo)
+            .map(function (list) {
+                itemNo = list.itemNo
+                return list.itemId === selectItem[0].itemId
+                    ? { ...list, ...allData, updateDate: new Date() } : list;
+            })
 
-        const newList = listAll.map(function (list) {
-            return list.itemId == selectItem[0].itemId ? { ...list, ...formDataObj, date: pickDateTime || selectItem[0].date } : list;
-        })
-        setListAll(newList)
+        setListAll(formDataObj.itemNo
+            ? newList
+            : [...newList, { ...allData, itemId: genId(), itemNo: itemNo + 1, status: "Waiting" }]
+        )
         // clear form
         setSelectItem([{}])
+        setItems([])
     }
-    // อัพเดทหน่วยงานเพิ่ม ตอนบันทึก List
-    const [listDepartment, setListDepartment] = useState()
+    // อัพเดทหน่วยงานเพิ่ม
     useEffect(() => {
         const arr = defaultDepartment
         listAll.forEach(ele => {
@@ -109,7 +112,7 @@ function ConfirmPage() {
 
     return (
         <div>
-            <div className="text-head bg-white">
+            <div id="title" className="text-head bg-white">
                 อนุมัติเบิกจ่ายครุภัณฑ์
             </div>
 
@@ -131,12 +134,10 @@ function ConfirmPage() {
                                     month: 'long',
                                     day: 'numeric',
                                 })
-                                console.log(event)
-                                // const el = document.getElementsByClassName("headPickDateTime")
-                                // el[0].childNodes[0].value = dateThai // also change
+                                // set date to formatThai but some element render back
                                 if (dateThai.includes("Invalid")) return
                                 const em = document.getElementsByClassName("form-control")
-                                em[0].value = dateThai // use 0 for first input box
+                                em[0].value = dateThai
                             }}
                             timeFormat={false}
                             renderYear={renderYear}
@@ -165,12 +166,6 @@ function ConfirmPage() {
                             style={{ cursor: "pointer" }}
                             onClick={() => {
                                 setFilter({ status: "All", date: "", department: "" })
-                                // not updated to thai format date
-                                const el = document.getElementsByClassName("headPickDateTime")
-                                console.log(el[0].childNodes)
-                                // el[0].childNodes[0].defaultValue = null
-                                // el[0].childNodes[0].value = null
-                                // console.log(el[0].childNodes[0])
                             }}
                         />
                     </Col>
@@ -181,7 +176,7 @@ function ConfirmPage() {
                 <Row>
                     <Col md="auto" sm="6" xs="12">
                         <div
-                            class={`btn-group btn-status ${filter.status == "All" && "btn-active"}`}
+                            class={`btn-group btn-status ${filter.status === "All" && "btn-active"}`}
                             role="group"
                             onClick={() => setFilter({ ...filter, status: "All" })}
                         >
@@ -198,7 +193,7 @@ function ConfirmPage() {
                     </Col>
                     <Col md="auto" sm="6" xs="12">
                         <div
-                            class={`btn-group btn-status ${filter.status == "Waiting" && "btn-active"}`}
+                            class={`btn-group btn-status ${filter.status === "Waiting" && "btn-active"}`}
                             variant='light' onClick={() => setFilter({ ...filter, status: "Waiting" })}
                         >
                             <button class="btn">
@@ -209,14 +204,14 @@ function ConfirmPage() {
                             </button>
                             <button class="btn">
                                 <b>
-                                    {listAll.filter(ele => ele.status == "Waiting").length}
+                                    {listAll.filter(ele => ele.status === "Waiting").length}
                                 </b>
                             </button>
                         </div>
                     </Col>
                     <Col md="auto" sm="6" xs="12">
                         <div
-                            class={`btn-group btn-status ${filter.status == "Approve" && "btn-active"}`}
+                            class={`btn-group btn-status ${filter.status === "Approve" && "btn-active"}`}
                             variant='light' onClick={() => setFilter({ ...filter, status: "Approve" })}
                         >
                             <button class="btn">
@@ -226,13 +221,13 @@ function ConfirmPage() {
                                 อนุมัติแล้ว
                             </button>
                             <button class="btn">
-                                <b> {listAll.filter(ele => ele.status == "Approve").length}</b>
+                                <b> {listAll.filter(ele => ele.status === "Approve").length}</b>
                             </button>
                         </div>
                     </Col>
                     <Col md="auto" sm="6" xs="12">
                         <div
-                            class={`btn-group btn-status ${filter.status == "Reject" && "btn-active"}`}
+                            class={`btn-group btn-status ${filter.status === "Reject" && "btn-active"}`}
                             variant='light' onClick={() => setFilter({ ...filter, status: "Reject" })}
                         >
                             <button class="btn">
@@ -242,7 +237,7 @@ function ConfirmPage() {
                                 Reject
                             </button>
                             <button class="btn">
-                                <b>{listAll.filter(ele => ele.status == "Reject").length}</b>
+                                <b>{listAll.filter(ele => ele.status === "Reject").length}</b>
                             </button>
                         </div>
                     </Col>
@@ -266,15 +261,18 @@ function ConfirmPage() {
                                 </Stack>
                             </div>
 
-                            <div class="rounded-bottom bg-white pb-2" style={{ height: "45vh" }}>
-                                {listAll?.filter(list => filter.status ? (filter.status == "All" ? list : list.status == filter.status) : list.status == "Waiting")
-                                    .filter(list => filter.date ? moment(list.date).format('DD MM YYYY') == moment(filter.date).format('DD MM YYYY') : list)
-                                    .filter(list => filter.department ? list.department == filter.department : list)
+                            <div class="rounded-bottom bg-white pb-2" style={{ minHeight: "45vh" }}>
+                                {listAll?.filter(list => filter.status ? (filter.status === "All" ? list : list.status === filter.status) : list.status === "Waiting")
+                                    .filter(list => filter.date ? moment(list.date).format('DD MM YYYY') === moment(filter.date).format('DD MM YYYY') : list)
+                                    .filter(list => filter.department ? list.department === filter.department : list)
                                     .map((item, index) => (
                                         <Card
                                             className='box-item'
                                             onClick={() => {
+                                                setErr(false)
                                                 setSelectItem([item])
+                                                console.log(item)
+                                                setItems(item.inventory || [])
                                             }}
                                         >
                                             <Row>
@@ -290,14 +288,14 @@ function ConfirmPage() {
                                             </div>
                                             <hr className='mb-2' />
                                             <Stack direction="horizontal" gap={2} className='ms-auto'>
-                                                {item.status == "Waiting"
+                                                {item.status === "Waiting"
                                                     ? <>
                                                         <Button variant="danger" onClick={() => rejectItem(item.itemNo)}>Reject</Button>
                                                         <Button variant="success" onClick={() => approveItem(item.itemNo)}>อนุมัติ</Button>
                                                     </>
                                                     :
                                                     <div
-                                                        class={item.status == "Approve" ? "text-success" : "text-danger"}
+                                                        class={item.status === "Approve" ? "text-success" : "text-danger"}
                                                     >
                                                         <strong>
                                                             {item.status}
@@ -329,40 +327,38 @@ function ConfirmPage() {
                                 <Button variant="outline-success" className='ms-auto'
                                     onClick={() => setShowList(false)}>ดูรายละเอียด</Button>
                                 <Button variant="outline-success"
-                                    onClick={() => {
-                                        // window.print()
-
-                                        // var printwin = window.open("");
-                                        // printwin.document.write(document.getElementById("forms").innerHTML);
-                                        // printwin.print();
-                                    }}>พิมพ์</Button>
-                            </Stack>
-                        </div>
-                        <div className='text-head mb-3'>
-                            <Stack direction="horizontal">
-                                บันทึกใบเบิกครุภัณฑ์
-                                <Button variant="success" className='ms-auto'
-                                    type="submit" form="forms">
-                                    บันทึก
+                                    onClick={() => { window.print() }}
+                                >
+                                    พิมพ์
                                 </Button>
                             </Stack>
                         </div>
-
-                        <Form id="forms" onSubmit={submit}  >
-                            <ListBox
-                                selectItem={selectItem}
-                                renderMonth={renderMonth}
-                                renderYear={renderYear}
-                                optionDepartment={optionDepartment}
-                                callbackDateTime={value => setPickDateTime(value)}
+                        <div className="printform">
+                            <div className='text-head mb-3'>
+                                <Stack direction="horizontal">
+                                    บันทึกใบเบิกครุภัณฑ์
+                                    <Button variant="success" className='ms-auto'
+                                        type="submit" form="forms">
+                                        บันทึก
+                                    </Button>
+                                </Stack>
+                            </div>
+                            <Form id="forms" onSubmit={submit}>
+                                <ListBox
+                                    selectItem={selectItem}
+                                    renderMonth={renderMonth}
+                                    renderYear={renderYear}
+                                    optionDepartment={optionDepartment}
+                                    callbackDateTime={value => setPickDateTime(value)}
+                                />
+                            </Form>
+                            <TableForm
+                                err={err}
+                                callbackErr={val => setErr(val)}
+                                callbackItem={setItems}
+                                items={items}
                             />
-                        </Form>
-                        <TableForm
-                            err={err}
-                            tableHead={tableHead}
-                            callbackErr={val => setErr(val)}
-                        />
-
+                        </div>
                     </div>
                 </Col>
             </Row>
@@ -377,7 +373,9 @@ function ConfirmPage() {
                             <div>
                                 &nbsp;{ele.name}
                             </div>
-                            &nbsp;{moment(ele.date).format("DD/MM/YYYY HH.mm")}
+                            <div>
+                                &nbsp;{moment(ele.date).format("DD/MM/YYYY HH.mm")}
+                            </div>
                         </div>
                     ))}
                 </Col>
@@ -390,10 +388,12 @@ function ConfirmPage() {
                             <div>
                                 &nbsp;xxxxx xxxxxxxxxxx
                             </div>
-                            &nbsp;
-                            {i === 0 && moment(new Date()).add(6, 'hours').format("DD/MM/YYYY HH.mm")}
-                            {i === 1 && moment(new Date()).add(1, 'days').format("DD/MM/YYYY HH.mm")}
-                            {i === 2 && moment(new Date().setMinutes(30)).add(3, 'days').format("DD/MM/YYYY HH.mm")}
+                            <div>
+                                &nbsp;
+                                {i === 0 && moment(new Date()).add(6, 'hours').format("DD/MM/YYYY HH.mm")}
+                                {i === 1 && moment(new Date()).add(1, 'days').format("DD/MM/YYYY HH.mm")}
+                                {i === 2 && moment(new Date().setMinutes(30)).add(3, 'days').format("DD/MM/YYYY HH.mm")}
+                            </div>
                         </div>
                     </Col>
                 ))}
@@ -404,20 +404,12 @@ function ConfirmPage() {
 }
 
 function ListBox(props) {
-    const submit = (e) => {
-        e.preventDefault()
-        const formData = new FormData(e.target)
-        const formDataObj = Object.fromEntries(formData.entries())
-        console.log(formDataObj)
-    }
-
     const [pickDateTime, setPickDateTime] = useState()
     const item = props.selectItem[0]
-    const [optionVal,setOptionVal] = useState()
+    const [optionVal, setOptionVal] = useState()
 
     useEffect(() => {
         setPickDateTime(props.selectItem[0].date)
-        console.log(props.selectItem[0])
         setOptionVal(item.department)
     }, [props.selectItem])
 
@@ -456,6 +448,7 @@ function ListBox(props) {
                                 />
                             </Col>
                         </Form.Group>
+                        {/* <a href="#" data-toggle="tooltip" title="Tooltip!">link</a>   */}
                     </td>
                     <td>
                         <Form.Group as={Row}>
@@ -480,12 +473,11 @@ function ListBox(props) {
                             </Form.Label>
                             <Col sm="12" lg="8">
                                 <Form.Select size='sm'
-                                    // defaultValue={item.department}
-                                    value={optionVal}
+                                    value={optionVal || ""}
                                     name="department"
                                     onChange={(e) => setOptionVal(e.target.value)}
                                 >
-                                    {!item.department && <option defaultValue></option>}
+                                    {!item.department && <option></option>}
                                     {props.optionDepartment.map(val => {
                                         return <option value={val}>{val}</option>
                                     })}
@@ -514,20 +506,16 @@ function ListBox(props) {
                             </Form.Label>
                             <Col sm="12" lg="8">
                                 <Datetime className='inForm'
-                                    // value={}
-                                    // renderMonth={props.renderMonth}
-                                    // renderYear={props.renderYear}
                                     timeFormat="HH.mm"
                                     name="date"
                                     dateFormat="DD/MM/yyyy"
-                                    locale='Th'
+                                    locale='th' //*
                                     value={pickDateTime}
                                     onChange={ev => {
                                         setPickDateTime(new Date(ev))
                                         props.callbackDateTime(new Date(ev))
                                     }}
                                 />
-                                {/* >> moment/locale/th ** is not completed << */}
                                 <i className="pi pi-calendar btn-calendar" />
                             </Col>
                         </Form.Group>
@@ -578,11 +566,9 @@ function ListBox(props) {
                             <Col sm="12" lg="8">
                                 <Form.Select
                                     size='sm'
-                                    value={item.department}
                                     name="year"
                                     defaultValue={parseInt(moment(pickDateTime).format('yyyy')) + 543}
                                 >
-                                    {/* 4test */}
                                     <option>{parseInt(moment(pickDateTime).format('yyyy')) + 543}</option>
                                     <option>{parseInt(moment(pickDateTime).add(1, "year").format('yyyy')) + 543}</option>
                                 </Form.Select>
@@ -596,31 +582,32 @@ function ListBox(props) {
 }
 
 function TableForm(props) {
-    const [item, setItem] = useState([])
-    const { tableHead } = props
+    const item = props.items
+    const tableHead = ['ลำดับ', 'เลขครุภัณฑ์', 'ชื่อครุภัณฑ์', 'ยี่ห้อ/รุ่น/ขนาด', 'Serial No.', 'ผู้ผลิต', 'ผู้จำหน่าย', 'จำนวนเงิน', '']
 
     const addItem = () => {
-        const items = item.push([]);
-        console.log(item)
-        setItem([{}])
+        props.callbackItem([...item, {}])
         props.callbackErr(false)
     }
 
     const deleteItem = (index) => {
-        const newList = item.filter((item, ind) => (ind != index))
-        console.log(index, newList)
-        setItem(newList)
+        const newList = item.filter((item, ind) => (ind !== index))
+        props.callbackItem(newList)
     }
 
+    useEffect(() => {
+        props.callbackItem(item)
+    }, [item])
+
     return (
-        <Form id="tableItems" >
+        <>
             <div className='text-head'>
                 <Stack direction="horizontal">
                     รายงานใบเบิกครุภัณฑ์
                     <Button
                         variant={!props.err ? "success" : "outline-danger"}
                         className='ms-auto'
-                        onClick={addItem}
+                        onClick={e => { e.preventDefault(); addItem() }}
                     >เพิ่มใบเบิกครุภัณฑ์</Button>
                 </Stack>
             </div>
@@ -640,44 +627,73 @@ function TableForm(props) {
                         <td>
                             <Form.Control
                                 className="input-table"
-                                name={tableHead[ind + 1]}
-                            // value=""
+                                name={tableHead[1]}
+                                onChange={e => {
+                                    item[ind] = { ...item[ind], [`${e.target.name}`]: e.target.value }
+                                }}
+                                defaultValue={ele?.เลขครุภัณฑ์ || ""}
+                            />
+                            {ele.เลขครุภัณฑ์}
+                        </td>
+                        <td>
+                            <Form.Control
+                                className="input-table"
+                                name={tableHead[2]}
+                                onChange={e => {
+                                    item.splice(ind, 1, { ...item[ind], [`${e.target.name}`]: e.target.value })
+                                }}
+                                defaultValue={ele?.ชื่อครุภัณฑ์}
+                            />
+                            {ele?.ชื่อครุภัณฑ์}
+                        </td>
+                        <td>
+                            <Form.Control
+                                className="input-table"
+                                name={tableHead[3]}
+                                onChange={e => {
+                                    item.splice(ind, 1, { ...item[ind], [`${e.target.name}`]: e.target.value })
+                                }}
+                                defaultValue={ele.detail}
                             />
                         </td>
                         <td>
                             <Form.Control
                                 className="input-table"
-                                name={tableHead[ind + 1]}
+                                name={tableHead[4]}
+                                onChange={e => {
+                                    item.splice(ind, 1, { ...item[ind], [`${e.target.name}`]: e.target.value })
+                                }}
+                                defaultValue={ele.serialNo}
                             />
                         </td>
                         <td>
                             <Form.Control
                                 className="input-table"
-                                name={tableHead[ind + 1]}
+                                name={tableHead[5]}
+                                onChange={e => {
+                                    item.splice(ind, 1, { ...item[ind], [`${e.target.name}`]: e.target.value })
+                                }}
+                                defaultValue={ele.ผู้ผลิต}
                             />
                         </td>
                         <td>
                             <Form.Control
                                 className="input-table"
-                                name={tableHead[ind + 1]}
+                                name={tableHead[6]}
+                                onChange={e => {
+                                    item.splice(ind, 1, { ...item[ind], [`${e.target.name}`]: e.target.value })
+                                }}
+                                defaultValue={ele.ผู้จำหน่าย}
                             />
                         </td>
                         <td>
                             <Form.Control
                                 className="input-table"
-                                name={tableHead[ind + 1]}
-                            />
-                        </td>
-                        <td>
-                            <Form.Control
-                                className="input-table"
-                                name={tableHead[ind + 1]}
-                            />
-                        </td>
-                        <td>
-                            <Form.Control
-                                className="input-table"
-                                name=""
+                                name={tableHead[7]}
+                                onChange={e => {
+                                    item.splice(ind, 1, { ...item[ind], [`${e.target.name}`]: e.target.value })
+                                }}
+                                defaultValue={ele.จำนวนเงิน}
                             />
                         </td>
                         <td style={{ cursor: "pointer" }}
@@ -688,8 +704,7 @@ function TableForm(props) {
                     </tr>
                 ))}
             </Table>
-
-        </Form >
+        </>
     )
 }
 
